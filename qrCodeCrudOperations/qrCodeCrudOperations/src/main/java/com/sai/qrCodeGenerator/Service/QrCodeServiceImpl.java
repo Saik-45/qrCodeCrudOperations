@@ -12,8 +12,10 @@ import com.sai.qrCodeGenerator.Repository.QrCodeRepository;
 import com.sai.qrCodeGenerator.Service.GenerateRandomQrIdService;
 import com.sai.qrCodeGenerator.Service.QrCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -84,6 +86,11 @@ public class QrCodeServiceImpl implements QrCodeService {
 
     @Override
     public QrCodeEntity getDataByQrId(String qrId) {
-        return qrCodeRepository.findByQrId(qrId);
+        QrCodeEntity qrCodeEntity = qrCodeRepository.findByQrId(qrId);
+        if (qrCodeEntity == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "QR code with ID " + qrId + " not found.");
+        }
+        return qrCodeEntity;
     }
+
 }
