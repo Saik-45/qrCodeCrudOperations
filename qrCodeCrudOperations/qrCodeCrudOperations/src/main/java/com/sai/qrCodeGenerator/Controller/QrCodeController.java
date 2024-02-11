@@ -2,6 +2,7 @@ package com.sai.qrCodeGenerator.Controller;
 
 import com.sai.qrCodeGenerator.Entity.QrCodeEntity;
 import com.sai.qrCodeGenerator.Service.QrCodeService;
+import com.sai.qrCodeGenerator.Service.QrCodeServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -10,12 +11,14 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/qr")
 public class QrCodeController {
 
     @Autowired
-    private QrCodeService qrCodeService;
+    private QrCodeServiceImpl qrCodeService;
 
     @GetMapping("/home")
     private String home(){
@@ -47,6 +50,24 @@ public class QrCodeController {
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "QR code with ID " + qrId + " not found.");
         }
+    }
+
+    @PostMapping("/update/{qrId}")
+    public ResponseEntity<String> updateByQrId(@PathVariable String qrId, @RequestBody @Validated QrCodeEntity qrCodeEntity) {
+        qrCodeService.updateByQrId(qrId, qrCodeEntity);
+        return ResponseEntity.ok("QR code with ID " + qrId + " updated successfully...");
+    }
+
+    @DeleteMapping("/delete/{qrId}")
+    public ResponseEntity<String> deleteByQrId(@PathVariable String qrId) {
+        qrCodeService.deleteByQrId(qrId);
+        return ResponseEntity.ok("QR code with ID " + qrId + " deleted successfully...");
+    }
+
+    @PatchMapping("/patch/{qrId}")
+    public ResponseEntity<String> patchByQrId(@PathVariable String qrId, @RequestBody Map<String, Object> updates) {
+        qrCodeService.patchByQrId(qrId, updates);
+        return ResponseEntity.ok("QR code with ID " + qrId + " Partially Updated successfully...");
     }
 
 }

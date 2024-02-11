@@ -93,4 +93,60 @@ public class QrCodeServiceImpl implements QrCodeService {
         return qrCodeEntity;
     }
 
+    @Override
+    public void updateByQrId(String qrId, QrCodeEntity qrCodeEntity) {
+        QrCodeEntity existingQrCode = qrCodeRepository.findByQrId(qrId);
+        if (existingQrCode == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "QR code with ID " + qrId + " not found.");
+        }
+        // Update fields of existing QR code entity
+        existingQrCode.setName(qrCodeEntity.getName());
+        existingQrCode.setAddress(qrCodeEntity.getAddress());
+        existingQrCode.setColor(qrCodeEntity.getColor());
+        existingQrCode.setPhoneNumber(qrCodeEntity.getPhoneNumber());
+        qrCodeRepository.save(existingQrCode);
+    }
+
+    @Override
+    public void deleteByQrId(String qrId) {
+        QrCodeEntity existingQrCode = qrCodeRepository.findByQrId(qrId);
+        if (existingQrCode == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "QR code with ID " + qrId + " not found.");
+        }
+        qrCodeRepository.delete(existingQrCode);
+    }
+
+    @Override
+    public void patchByQrId(String qrId, Map<String, Object> updates) {
+        QrCodeEntity existingQrCode = qrCodeRepository.findByQrId(qrId);
+        if (existingQrCode == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "QR code with ID " + qrId + " not found.");
+        }
+        // Apply updates from the map to the existing QR code entity
+        for (Map.Entry<String, Object> entry : updates.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            switch (key) {
+                case "name":
+                    existingQrCode.setName((String) value);
+                    break;
+                case "address":
+                    existingQrCode.setAddress((String) value);
+                    break;
+                case "color":
+                    existingQrCode.setColor((String) value);
+                    break;
+                case "phoneNumber":
+                    existingQrCode.setPhoneNumber((String) value);
+                    break;
+                // Add more cases for other fields as needed
+                default:
+                    throw new IllegalArgumentException("Invalid field: " + key);
+            }
+        }
+        qrCodeRepository.save(existingQrCode);
+    }
+
+
+
 }
